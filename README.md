@@ -16,6 +16,8 @@ to be run as.
 
 ## Example
 
+### ListenAndServe
+
 ```go
 package main
 
@@ -40,6 +42,39 @@ func handler(w http.ResponseWriter, req *http.Request) {
 func main() {
 	http.HandleFunc("/", handler)
 	log.Fatal(golisten.ListenAndServe("guillaume", ":80", nil))
+}
+```
+
+### Listen
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os/user"
+
+	"github.com/creack/golisten"
+)
+
+func handler(w http.ResponseWriter, req *http.Request) {
+	u, err := user.Current()
+	if err != nil {
+		log.Printf("Error getting user: %s", err)
+		return
+	}
+	fmt.Fprintf(w, "%s\n", u.Uid)
+}
+
+func ExampleListenAndServe() {
+	ln, err := golisten.Listen("guillaume", "tcp", ":80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	http.HandleFunc("/", handler)
+	log.Fatal(http.Serve(ln, nil))
 }
 ```
 
